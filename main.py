@@ -86,7 +86,11 @@ def hill_climbing(number):
         r1 = random.randint(0, test_size - 1)
         print(r1)
         print(s)
-        s[r:r1:-1]
+        if(r < r1):
+            s[r:r1:-1]
+        else:
+            s[r1:r:-1]
+
         print(s)
         s1 = s.copy()
         if evaluate(s1) < dist:
