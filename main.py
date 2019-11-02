@@ -49,8 +49,9 @@ os.chdir(dir_path)  # Change the working directory so we can read the file
 
 ncolours, colours = read_file('colours.txt')  # Total number of colours and list of colours
 
-test_size = 100  # Size of the subset of colours for testing
+test_size = 1000  # Size of the subset of colours for testing
 test_colours = colours[0:test_size]  # list of colours for testing
+
 
 # plot_colours(test_colours, permutation)
 
@@ -61,8 +62,8 @@ def random_sol():
 
 
 def calc_dist(col1, col2):
-    r1,g1,b1 = colours[col1]
-    r2,g2,b2 = colours[col2]
+    r1, g1, b1 = colours[col1]
+    r2, g2, b2 = colours[col2]
     dist = sqrt((r2 - r1) ** 2 + (g2 - g1) ** 2 + (b2 - b1) ** 2)
     return dist
 
@@ -70,35 +71,52 @@ def calc_dist(col1, col2):
 def evaluate(sol):
     dist = 0
     for i in range(len(sol) - 1):
-        dist += calc_dist(sol[i], sol[i+1])
+        dist += calc_dist(sol[i], sol[i + 1])
 
     return dist
 
+s = random_sol()
 
-def hill_climbing(number):
-    s = random_sol()
-    plot_colours(test_colours, s)
-    for i in range(number):
+def hill_climbing(s):
+    best = s
+    for i in range(1000):
         dist = evaluate(s)
-        print('Distance: ', dist)
-        r = random.randint(0, test_size - 1)
-        print(r)
-        r1 = random.randint(0, test_size - 1)
-        print(r1)
-        print(s)
-        if(r < r1):
-            s[r:r1:-1]
-        else:
-            s[r1:r:-1]
-
-        print(s)
         s1 = s.copy()
-        if evaluate(s1) < dist:
-            s = s1
+        r = random.randint(0, test_size - 1)
+        r1 = random.randint(0, test_size - 1)
+        if r < r1:
+            s1[r:r1] = s1[r:r1][::-1]
+        else:
+            s1[r1:r] = s1[r1:r][::-1]
+
+        dist1 = evaluate(s1)
+        if dist1 < dist:
+            s = s1.copy()
 
     return s
 
 
-s = hill_climbing(2000)
+# s = hill_climbing(1000)
+# plot_colours(test_colours, s)
+# print('Hill Climb: ', evaluate(s))
+
+
+def multi_hill_climbing(number):
+    s = random_sol()
+    best = s
+    plot_colours(test_colours, best)
+
+    for i in range(number):
+        s = hill_climbing(s)
+        dist = evaluate(s)
+        print('Climb ', i + 1, ' distance: ', dist)
+        b = evaluate(best)
+        if dist < b:
+            best = s
+        s = random_sol()
+
+    return best
+
+s = multi_hill_climbing(10)
 plot_colours(test_colours, s)
-print('Hill Climb: ',evaluate(s))
+print('Multi Hill Climb: ', evaluate(s))
