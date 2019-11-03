@@ -49,7 +49,7 @@ os.chdir(dir_path)  # Change the working directory so we can read the file
 
 ncolours, colours = read_file('colours.txt')  # Total number of colours and list of colours
 
-test_size = 1000  # Size of the subset of colours for testing
+test_size = 100  # Size of the subset of colours for testing
 test_colours = colours[0:test_size]  # list of colours for testing
 
 
@@ -75,7 +75,9 @@ def evaluate(sol):
 
     return dist
 
+
 s = random_sol()
+
 
 def hill_climbing(s):
     best = s
@@ -109,7 +111,7 @@ def multi_hill_climbing(number):
     for i in range(number):
         s = hill_climbing(s)
         dist = evaluate(s)
-        print('Climb ', i + 1, ' distance: ', dist)
+        # print('Climb ', i + 1, ' distance: ', dist)
         b = evaluate(best)
         if dist < b:
             best = s
@@ -117,6 +119,24 @@ def multi_hill_climbing(number):
 
     return best
 
+
 s = multi_hill_climbing(10)
 plot_colours(test_colours, s)
 print('Multi Hill Climb: ', evaluate(s))
+
+def f_evaluate(sol):
+    dist = 0
+    for i in range(len(sol) - 1):
+        dist += f_calc_dist(sol[i], sol[i + 1])
+
+    return dist
+
+def f_calc_dist(col1, col2):
+    r1, g1, b1 = colours[col1]
+    r2, g2, b2 = colours[col2]
+    dist = sqrt((r2 - r1) ** 2 + (g2 - g1) ** 2 + (b2 - b1) ** 2)
+    if dist <= 0.2:
+
+    print(dist)
+    return dist
+
