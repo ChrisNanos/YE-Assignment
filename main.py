@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from math import sqrt
+from scipy.spatial import distance
 import random
 import os
 
@@ -81,7 +82,7 @@ s = random_sol()
 
 def hill_climbing(s):
     best = s
-    for i in range(1000):
+    for i in range(2000):
         dist = evaluate(s)
         s1 = s.copy()
         r = random.randint(0, test_size - 1)
@@ -111,7 +112,7 @@ def multi_hill_climbing(number):
     for i in range(number):
         s = hill_climbing(s)
         dist = evaluate(s)
-        # print('Climb ', i + 1, ' distance: ', dist)
+        print('Climb ', i + 1, ' distance: ', dist)
         b = evaluate(best)
         if dist < b:
             best = s
@@ -120,9 +121,10 @@ def multi_hill_climbing(number):
     return best
 
 
-s = multi_hill_climbing(10)
-plot_colours(test_colours, s)
-print('Multi Hill Climb: ', evaluate(s))
+# s = multi_hill_climbing(10)
+# plot_colours(test_colours, s)
+# print('Multi Hill Climb: ', evaluate(s))
+
 
 def f_evaluate(sol):
     dist = 0
@@ -131,12 +133,41 @@ def f_evaluate(sol):
 
     return dist
 
+
 def f_calc_dist(col1, col2):
     r1, g1, b1 = colours[col1]
     r2, g2, b2 = colours[col2]
     dist = sqrt((r2 - r1) ** 2 + (g2 - g1) ** 2 + (b2 - b1) ** 2)
-    if dist <= 0.2:
+    # if dist <= 0.2:
+    #     temp.append(colours[col1])
+    #     temp.append(colours[col2])
 
-    print(dist)
     return dist
 
+
+def greedy():
+    s = random_sol()
+    final = []
+    best = 0
+    temp = []
+    i = 0
+    j = 0
+    while i < len(s):
+        s1 = s[-1]
+        while j < len(s):
+            s2 = s[j]
+            dist = calc_dist(s1, s2)
+            print(s[j])
+            if dist < best:
+                best = dist.copy()
+                temp = test_colours[s2]
+        final.append(s1)
+        final.append(s2)
+
+    return final
+
+
+s = greedy()
+print(len(s))
+plot_colours(test_colours, s)
+print('Greedy: ', evaluate(s))
