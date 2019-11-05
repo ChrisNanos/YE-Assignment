@@ -1,9 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from math import sqrt
-from scipy.spatial import distance
 import random
 import os
+import copy
 
 
 # Reads the file  of colours
@@ -48,7 +48,7 @@ def plot_colours(col, perm):
 dir_path = os.path.dirname(os.path.realpath(__file__))
 os.chdir(dir_path)  # Change the working directory so we can read the file
 
-ncolours, colours = read_file('colours.txt')  # Total number of colours and list of colours
+test_size, colours = read_file('colours.txt')  # Total number of colours and list of colours
 
 test_size = 100  # Size of the subset of colours for testing
 test_colours = colours[0:test_size]  # list of colours for testing
@@ -84,7 +84,7 @@ def hill_climbing(s):
     best = s
     for i in range(2000):
         dist = evaluate(s)
-        s1 = s.copy()
+        s1 = s.copy()  # Make a copy of the solution
         r = random.randint(0, test_size - 1)
         r1 = random.randint(0, test_size - 1)
         if r < r1:
@@ -94,7 +94,7 @@ def hill_climbing(s):
 
         dist1 = evaluate(s1)
         if dist1 < dist:
-            s = s1.copy()
+            s = s1
 
     return s
 
@@ -157,17 +157,44 @@ def greedy():
         while j < len(s):
             s2 = s[j]
             dist = calc_dist(s1, s2)
-            print(s[j])
             if dist < best:
                 best = dist.copy()
-                temp = test_colours[s2]
+                temp.append(colours[s2])
+            j += 1
         final.append(s1)
         final.append(s2)
+        i += 1
 
     return final
 
 
-s = greedy()
-print(len(s))
+s = np.zeros((test_size, test_size))  # sets a 2d array s, of size test_size
+for i in range(0, test_size - 1):
+    for j in range(0, test_size - 1):
+        s[i, j] = calc_dist(i, j)  # enters every possible distance calculated into the array
+
+
+# s is the solution provided, start is the index of the starting location
+def constructive(s, start):
+    path = [start]
+    n = s.shape[0]
+    mask = np.ones(n, dtype=bool)  # boolean values of location haven't been visited
+    mask[start] = False
+
+    for i in range(n - 1):
+        last = path[-1]
+        next_ind = np.argmin(s[last][mask])  # minimum of remaining locations
+        print('Next index: ', next_ind, ', Last: ', last, ', Mask: ', mask)
+        next_loc = np.arange(n)[mask][next_ind]  # convert to original location
+        print('Next Loc: ', next_loc)
+        path.append(next_loc)
+        mask[next_loc] = False
+
+    return path
+
+
+plot_colours(test_colours, random_sol())
+s = constructive(s, 0)
 plot_colours(test_colours, s)
-print('Greedy: ', evaluate(s))
+dist = evaluate(s)
+print('Distance: ', dist)
