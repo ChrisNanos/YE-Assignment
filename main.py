@@ -54,9 +54,6 @@ test_size = 1000  # Size of the subset of colours for testing
 test_colours = colours[0:test_size]  # list of colours for testing
 
 
-# plot_colours(test_colours, permutation)
-
-
 def random_sol():
     # produces random permutation of length test_size, from the numbers 0 to test_size -1
     return random.sample(range(test_size), test_size)
@@ -99,11 +96,6 @@ def hill_climbing(s):
     return s
 
 
-# s = hill_climbing(1000)
-# plot_colours(test_colours, s)
-# print('Hill Climb: ', evaluate(s))
-
-
 def multi_hill_climbing(number):
     s = random_sol()
     best = s
@@ -121,51 +113,9 @@ def multi_hill_climbing(number):
     return best
 
 
-# s = multi_hill_climbing(10)
-# plot_colours(test_colours, s)
-# print('Multi Hill Climb: ', evaluate(s))
-
-
-def f_evaluate(sol):
-    dist = 0
-    for i in range(len(sol) - 1):
-        dist += f_calc_dist(sol[i], sol[i + 1])
-
-    return dist
-
-
-def f_calc_dist(col1, col2):
-    r1, g1, b1 = colours[col1]
-    r2, g2, b2 = colours[col2]
-    dist = sqrt((r2 - r1) ** 2 + (g2 - g1) ** 2 + (b2 - b1) ** 2)
-    # if dist <= 0.2:
-    #     temp.append(colours[col1])
-    #     temp.append(colours[col2])
-
-    return dist
-
-
-def greedy():
-    s = random_sol()
-    final = []
-    best = 0
-    temp = []
-    i = 0
-    j = 0
-    while i < len(s):
-        s1 = s[-1]
-        while j < len(s):
-            s2 = s[j]
-            dist = calc_dist(s1, s2)
-            if dist < best:
-                best = dist.copy()
-                temp.append(colours[s2])
-            j += 1
-        final.append(s1)
-        final.append(s2)
-        i += 1
-
-    return final
+s = multi_hill_climbing(10)
+plot_colours(test_colours, s)
+print('Multi Hill Climb: ', evaluate(s))
 
 
 s = np.zeros((test_size, test_size))  # sets a 2d array s, of size test_size
