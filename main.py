@@ -125,7 +125,7 @@ for i in range(0, test_size - 1):
 
 
 # s is the solution provided, start is the index of the starting location
-def constructive(s, start):
+def greedy_constructive(s, start):
     path = [start]
     n = s.shape[0]
     mask = np.ones(n, dtype=bool)  # boolean values of location haven't been visited
@@ -144,7 +144,7 @@ def constructive(s, start):
 
 
 plot_colours(test_colours, random_sol())
-s = constructive(s, 0)
+s = greedy_constructive(s, 0)
 plot_colours(test_colours, s)
 dist = evaluate(s)
 print('Distance: ', dist)
