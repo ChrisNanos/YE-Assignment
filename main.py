@@ -50,7 +50,7 @@ os.chdir(dir_path)  # Change the working directory so we can read the file
 
 test_size, colours = read_file('colours.txt')  # Total number of colours and list of colours
 
-test_size = 100  # Size of the subset of colours for testing
+test_size = 1000  # Size of the subset of colours for testing
 test_colours = colours[0:test_size]  # list of colours for testing
 
 
@@ -184,9 +184,9 @@ def constructive(s, start):
     for i in range(n - 1):
         last = path[-1]
         next_ind = np.argmin(s[last][mask])  # minimum of remaining locations
-        print('Next index: ', next_ind, ', Last: ', last, ', Mask: ', mask)
+        # print('Next index: ', next_ind, ', Last: ', last, ', Mask: ', mask)
         next_loc = np.arange(n)[mask][next_ind]  # convert to original location
-        print('Next Loc: ', next_loc)
+        # print('Next Loc: ', next_loc)
         path.append(next_loc)
         mask[next_loc] = False
 
