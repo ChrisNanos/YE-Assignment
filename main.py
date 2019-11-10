@@ -80,7 +80,7 @@ trace = []
 
 def hill_climbing(s):
     trace.append(evaluate(s))
-    for i in range(1000):
+    for i in range(5000):
         dist = evaluate(s)
         s1 = s.copy()  # Make a copy of the solution
         # Generate 2 random integers, within the test_size limits
@@ -125,8 +125,8 @@ def multi_hill_climbing(s, number):
 
 def list_dist():
     s = np.zeros((test_size, test_size))  # sets a 2d array s, of size [test_size][test_size]
-    for i in range(0, test_size):
-        for j in range(0, test_size):
+    for i in range(test_size):
+        for j in range(test_size):
             s[i, j] = calc_dist(i, j)  # enters every possible distance calculated into the array
 
     return s
@@ -136,19 +136,18 @@ def list_dist():
 def greedy_construction(start):
     s = list_dist()
     best = [start]
-    n = s.shape[0]
-    mask = np.ones(n, dtype=bool)  # Masking array, denoting the values that have been already checked
+    mask = np.ones(test_size, dtype=bool)  # Masking array of size test_size, with values of type boolean, set to True
 
-    for i in range(n - 1):
+    for i in range(test_size - 1):
         last = best[-1]
         # Find the minimum distance in s, for the last index, parsed by mask (only those that are true)
         next_index = np.argmin(s[last][mask])
-        # print('Next index: ', next_ind, ', Last: ', last, ', Mask: ', mask)
+        # print('Next index: ', next_index, ', Last: ', last, ', Mask: ', mask)
 
-        # Arrange all values (n), subtracting the False ones from mask
+        # Arrange all values (test_size), subtracting the False ones from mask
         # and set the next index as a parameter
-        next_location = np.arange(n)[mask][next_index]
-        # print('Next Loc: ', next_loc, ' Mask: ', mask, ' Next ind: ', next_ind)
+        next_location = np.arange(test_size)[mask][next_index]
+        # print('Next Loc: ', next_location, ' Mask: ', mask)
 
         best.append(next_location)
         mask[next_location] = False
@@ -172,28 +171,42 @@ plot_colours(test_colours, random_sol())
 # plt.show()
 
 # ---------------------- Multi Hill Climbing ----------------------
-# iter = 30  # set the maximum iterations for the hill-climber
-# best, b_trace = multi_hill_climbing(random_sol(), iter)
-# plot_colours(test_colours, best)
-# # print(b_trace)
-# dist = evaluate(best)
-# print('Distance: ', dist)
-# print('Mean: ', statistics.mean(b_trace))
-# print('Median: ', statistics.median(b_trace))
-# print('Std. dev: ', statistics.stdev(b_trace))
-# plt.figure()
-# plt.plot(b_trace, 'bo', markersize=1.5)  # 'bo' indicates to plot as dots (circles) blue color
-# plt.title('Multi Hill Climb Best Trace')
-# plt.ylabel('Distance')
-# plt.xlabel('Solutions')
-# plt.show()
+iter = 30  # set the maximum iterations for the hill-climber
+best, b_trace = multi_hill_climbing(random_sol(), iter)
+plot_colours(test_colours, best)
+# print(b_trace)
+dist = evaluate(best)
+print('Distance: ', dist)
+print('Mean: ', statistics.mean(b_trace))
+print('Median: ', statistics.median(b_trace))
+print('Std. dev: ', statistics.stdev(b_trace))
+plt.figure()
+plt.plot(b_trace, 'bo', markersize=1.5)  # 'bo' indicates to plot as dots (circles) blue color
+plt.title('Multi Hill Climb Best Trace')
+plt.ylabel('Distance')
+plt.xlabel('Solutions')
+plt.show()
 
 # ---------------------- Greedy Construction ----------------------
-s = greedy_construction(0)
-plot_colours(test_colours, s)
-dist = evaluate(s)
-print('Greedy distance: ', dist)
+# s = greedy_construction(0)
+# plot_colours(test_colours, s)
+# dist = evaluate(s)
+# print('Greedy distance: ', dist)
+
+# ---------------------- Exhaustive Greedy Construction ----------------------
+# s = greedy_construction(0)
+# d = evaluate(s)
+# for i in range(test_size - 1):
+#     s1 = greedy_construction(i)
+#     d1 = evaluate(s1)
+#     if d1 < d:
+#         s = s1
+#         d = d1
+#         print('Index: ', i, ' distance: ', d1)
 #
+# plot_colours(test_colours, s)
+# dist = evaluate(s)
+# print('Exhaustive Greedy distance: ', dist)
 # ---------------------- Greedy Construction & Hill Climb ----------------------
 # s = greedy_construction(0)
 # # s, trace = hill_climbing(s)
