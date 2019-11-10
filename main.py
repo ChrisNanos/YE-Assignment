@@ -1,9 +1,9 @@
+import os
+import random
+from math import sqrt
+import statistics
 import matplotlib.pyplot as plt
 import numpy as np
-from math import sqrt
-import random
-import os
-import copy
 
 
 # Reads the file  of colours
@@ -50,7 +50,7 @@ os.chdir(dir_path)  # Change the working directory so we can read the file
 
 test_size, colours = read_file('colours.txt')  # Total number of colours and list of colours
 
-test_size = 1000  # Size of the subset of colours for testing
+test_size = 100  # Size of the subset of colours for testing
 test_colours = colours[0:test_size]  # list of colours for testing
 
 
@@ -75,76 +75,129 @@ def evaluate(sol):
 
 
 s = random_sol()
+trace = []
 
 
 def hill_climbing(s):
-    best = s
-    for i in range(2000):
+    trace.append(evaluate(s))
+    for i in range(1000):
         dist = evaluate(s)
         s1 = s.copy()  # Make a copy of the solution
+        # Generate 2 random integers, within the test_size limits
         r = random.randint(0, test_size - 1)
         r1 = random.randint(0, test_size - 1)
+
+        # Index Inverse Neighbourhood
         if r < r1:
             s1[r:r1] = s1[r:r1][::-1]
+
         else:
             s1[r1:r] = s1[r1:r][::-1]
 
+        # Index Swap Neighbourhood
+        # s1[r], s1[r1] = s1[r1], s1[r]
+
         dist1 = evaluate(s1)
+        trace.append(dist1)
         if dist1 < dist:
             s = s1
+            # trace.append(dist1)
 
-    return s
+    return s, trace
 
 
-def multi_hill_climbing(number):
-    s = random_sol()
+def multi_hill_climbing(s, number):
     best = s
-    plot_colours(test_colours, best)
+    best_trace = []
 
     for i in range(number):
-        s = hill_climbing(s)
+        s, trace = hill_climbing(best)
         dist = evaluate(s)
         print('Climb ', i + 1, ' distance: ', dist)
         b = evaluate(best)
         if dist < b:
             best = s
-        s = random_sol()
+            trace.sort(reverse=True)
+            best_trace = trace
+
+    return best, best_trace
+
+
+def list_dist():
+    s = np.zeros((test_size, test_size))  # sets a 2d array s, of size [test_size][test_size]
+    for i in range(0, test_size):
+        for j in range(0, test_size):
+            s[i, j] = calc_dist(i, j)  # enters every possible distance calculated into the array
+
+    return s
+
+
+# s is the solution provided, start is the index of the starting location
+def greedy_construction(start):
+    s = list_dist()
+    best = [start]
+    n = s.shape[0]
+    mask = np.ones(n, dtype=bool)  # Masking array, denoting the values that have been already checked
+
+    for i in range(n - 1):
+        last = best[-1]
+        # Find the minimum distance in s, for the last index, parsed by mask (only those that are true)
+        next_index = np.argmin(s[last][mask])
+        # print('Next index: ', next_ind, ', Last: ', last, ', Mask: ', mask)
+
+        # Arrange all values (n), subtracting the False ones from mask
+        # and set the next index as a parameter
+        next_location = np.arange(n)[mask][next_index]
+        # print('Next Loc: ', next_loc, ' Mask: ', mask, ' Next ind: ', next_ind)
+
+        best.append(next_location)
+        mask[next_location] = False
 
     return best
 
 
-s = multi_hill_climbing(10)
-plot_colours(test_colours, s)
-print('Multi Hill Climb: ', evaluate(s))
-
-
-s = np.zeros((test_size, test_size))  # sets a 2d array s, of size test_size
-for i in range(0, test_size - 1):
-    for j in range(0, test_size - 1):
-        s[i, j] = calc_dist(i, j)  # enters every possible distance calculated into the array
-
-
-# s is the solution provided, start is the index of the starting location
-def greedy_constructive(s, start):
-    path = [start]
-    n = s.shape[0]
-    mask = np.ones(n, dtype=bool)  # boolean values of location haven't been visited
-    mask[start] = False
-
-    for i in range(n - 1):
-        last = path[-1]
-        next_ind = np.argmin(s[last][mask])  # minimum of remaining locations
-        # print('Next index: ', next_ind, ', Last: ', last, ', Mask: ', mask)
-        next_loc = np.arange(n)[mask][next_ind]  # convert to original location
-        # print('Next Loc: ', next_loc)
-        path.append(next_loc)
-        mask[next_loc] = False
-
-    return path
-
-
+# ---------------------- Random ----------------------
 plot_colours(test_colours, random_sol())
-s = greedy_constructive(s, 0)
+
+# ---------------------- Hill Climbing ----------------------
+# best, b_trace = hill_climbing(random_sol())
+# print('Distance: ', evaluate(best))
+# plot_colours(test_colours, best)
+# print(b_trace)
+# plt.figure()
+# plt.plot(b_trace, 'bo', markersize=1.5)  # 'bo' indicates to plot as dots (circles) blue color
+# plt.title('Hill Climb Best Trace')
+# plt.ylabel('Distance')
+# plt.xlabel('Solutions')
+# plt.show()
+
+# ---------------------- Multi Hill Climbing ----------------------
+# iter = 30  # set the maximum iterations for the hill-climber
+# best, b_trace = multi_hill_climbing(random_sol(), iter)
+# plot_colours(test_colours, best)
+# # print(b_trace)
+# dist = evaluate(best)
+# print('Distance: ', dist)
+# print('Mean: ', statistics.mean(b_trace))
+# print('Median: ', statistics.median(b_trace))
+# print('Std. dev: ', statistics.stdev(b_trace))
+# plt.figure()
+# plt.plot(b_trace, 'bo', markersize=1.5)  # 'bo' indicates to plot as dots (circles) blue color
+# plt.title('Multi Hill Climb Best Trace')
+# plt.ylabel('Distance')
+# plt.xlabel('Solutions')
+# plt.show()
+
+# ---------------------- Greedy Construction ----------------------
+s = greedy_construction(0)
 plot_colours(test_colours, s)
 dist = evaluate(s)
-print('Distance: ', dist)
+print('Greedy distance: ', dist)
+#
+# ---------------------- Greedy Construction & Hill Climb ----------------------
+# s = greedy_construction(0)
+# # s, trace = hill_climbing(s)
+# plot_colours(test_colours, s)
+# s, trace = multi_hill_climbing(s, 10)
+# dist = evaluate(s)
+# print('Greedy Hill Climb distance: ', dist)
