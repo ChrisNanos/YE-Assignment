@@ -80,7 +80,7 @@ trace = []
 
 def hill_climbing(s):
     trace.append(evaluate(s))
-    for i in range(5000):
+    for i in range(1000):
         dist = evaluate(s)
         s1 = s.copy()  # Make a copy of the solution
         # Generate 2 random integers, within the test_size limits
@@ -171,21 +171,21 @@ plot_colours(test_colours, random_sol())
 # plt.show()
 
 # ---------------------- Multi Hill Climbing ----------------------
-iter = 30  # set the maximum iterations for the hill-climber
-best, b_trace = multi_hill_climbing(random_sol(), iter)
-plot_colours(test_colours, best)
-# print(b_trace)
-dist = evaluate(best)
-print('Distance: ', dist)
-print('Mean: ', statistics.mean(b_trace))
-print('Median: ', statistics.median(b_trace))
-print('Std. dev: ', statistics.stdev(b_trace))
-plt.figure()
-plt.plot(b_trace, 'bo', markersize=1.5)  # 'bo' indicates to plot as dots (circles) blue color
-plt.title('Multi Hill Climb Best Trace')
-plt.ylabel('Distance')
-plt.xlabel('Solutions')
-plt.show()
+# iter = 30  # set the maximum iterations for the hill-climber
+# best, b_trace = multi_hill_climbing(random_sol(), iter)
+# plot_colours(test_colours, best)
+# # print(b_trace)
+# dist = evaluate(best)
+# print('Distance: ', dist)
+# print('Mean: ', statistics.mean(b_trace))
+# print('Median: ', statistics.median(b_trace))
+# print('Std. dev: ', statistics.stdev(b_trace))
+# plt.figure()
+# plt.plot(b_trace, 'bo', markersize=1.5)  # 'bo' indicates to plot as dots (circles) blue color
+# plt.title('Multi Hill Climb Trace')
+# plt.ylabel('Distance')
+# plt.xlabel('Solutions')
+# plt.show()
 
 # ---------------------- Greedy Construction ----------------------
 # s = greedy_construction(0)
@@ -194,19 +194,19 @@ plt.show()
 # print('Greedy distance: ', dist)
 
 # ---------------------- Exhaustive Greedy Construction ----------------------
-# s = greedy_construction(0)
-# d = evaluate(s)
-# for i in range(test_size - 1):
-#     s1 = greedy_construction(i)
-#     d1 = evaluate(s1)
-#     if d1 < d:
-#         s = s1
-#         d = d1
-#         print('Index: ', i, ' distance: ', d1)
-#
-# plot_colours(test_colours, s)
-# dist = evaluate(s)
-# print('Exhaustive Greedy distance: ', dist)
+s = greedy_construction(0)
+d = evaluate(s)
+for i in range(test_size - 1):
+    s1 = greedy_construction(i)
+    d1 = evaluate(s1)
+    if d1 < d:
+        s = s1
+        d = d1
+        print('Index: ', i, ' distance: ', d1)
+
+plot_colours(test_colours, s)
+dist = evaluate(s)
+print('Exhaustive Greedy distance: ', dist)
 # ---------------------- Greedy Construction & Hill Climb ----------------------
 # s = greedy_construction(0)
 # # s, trace = hill_climbing(s)
